@@ -1,4 +1,4 @@
-app.config = require("./config.json");
+var config = require("./config.json");
 
 var tmi = require('tmi.js');
 
@@ -12,7 +12,7 @@ var options = {
     },
     identity: {
         username: "ZapteccBot",
-        password: app.config.password
+        password: config.password
     },
     channels: ["Zaptecc"]
 };
