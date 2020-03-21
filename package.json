@@ -9,6 +9,6 @@
   "author": "Zaptecc",
   "license": "ISC",
   "dependencies": {
-    "tmi.js": "^1.2.1"
+    "tmi.js": "^1.5.0"
   }
 }
