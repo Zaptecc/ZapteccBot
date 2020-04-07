@@ -1,30 +1,50 @@
-var config = require("./config.json");
+const config = require("./config.json");
 
-var tmi = require('tmi.js');
+const tmi = require('tmi.js');
+const discord = require('discord.js');
+const discordClient = new discord.Client;
 
-var options = {
+const options = {
     options: {
-        debug: true
-    },
-    connection: {
-        cluster: "aws",
-        reconnect: true
+        //debug: true
     },
     identity: {
         username: "ZapteccBot",
-        password: config.password
+        password: config.twitchPassword
     },
-    channels: ["Zaptecc"]
+    channels: [
+        "Zaptecc"
+    ]
 };
 
-var client = new tmi.client(options);
-client.connect();
+discordClient.login(config.discordToken);
 
-client.on('connected', function(address, port) {
-    console.log("Address: " + address + ", Port: " + port);
-    client.action("Zaptecc", "Connected to chat!")
+            //TWITCH BELOW
+
+const twitchClient = new tmi.client(options);
+
+twitchClient.on('message', onMessageHandler);
+twitchClient.on('connected', onConnectedHandler);
+
+twitchClient.connect();
+
+function onMessageHandler (channel, user, msg, self) {
+    if (self) { return; } // Ignore messages from the bot
+  
+    //const channel = discordClient.channels.fetch('446713147068514304');
+    //channel.say(msg.user + ': ' + msg);
+
+    console.log('**NEW MESSAGE** : [' + user['display-name'] + '] - ' + msg);
+
+  }
+
+function onConnectedHandler (addr, port) {
+    console.log(`* Connected to ${addr}:${port}`);
+    twitchClient.action("Zaptecc", "Connected to chat!");
+}
+
+             //DISCORD BELOW
+
+discordClient.on('ready', () => {
+    console.log(`Logged in to Discord as ${discordClient.user.tag}!`);
 });
-
-client.on('chat', function(channel, user, message, self) {
-    client.action("Zaptecc", user['display-name'] + " you rang?")
-})

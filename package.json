@@ -9,6 +9,7 @@
   "author": "Zaptecc",
   "license": "ISC",
   "dependencies": {
+    "discord.js": "^12.0.2",
     "tmi.js": "^1.5.0"
   }
 }
