@@ -1,10 +1,6 @@
 const config = require("./config.json");
 
-const tmi = require('tmi.js');
-const discord = require('discord.js');
-const discordClient = new discord.Client;
-
-const options = {
+const twitchOptions = {
     options: {
         //debug: true
     },
@@ -12,16 +8,15 @@ const options = {
         username: "ZapteccBot",
         password: config.twitchPassword
     },
-    channels: [
-        "Zaptecc"
-    ]
+    channels: ["Zaptecc"]
 };
 
+const tmi = require('tmi.js');
+const twitchClient = new tmi.client(twitchOptions);
+const discord = require('discord.js');
+const discordClient = new discord.Client;
+
 discordClient.login(config.discordToken);
-
-            //TWITCH BELOW
-
-const twitchClient = new tmi.client(options);
 
 twitchClient.on('message', onMessageHandler);
 twitchClient.on('connected', onConnectedHandler);
@@ -29,22 +24,53 @@ twitchClient.on('connected', onConnectedHandler);
 twitchClient.connect();
 
 function onMessageHandler (channel, user, msg, self) {
-    if (self) { return; } // Ignore messages from the bot
-  
-    //const channel = discordClient.channels.fetch('446713147068514304');
-    //channel.say(msg.user + ': ' + msg);
+    if (self) {return;} // Ignore messages from the bot
+    
+    const discordChannel = discordClient.channels.cache.get('446713147068514304');
+    if (!discordChannel) return;
 
-    console.log('**NEW MESSAGE** : [' + user['display-name'] + '] - ' + msg);
 
-  }
+    if (msg.startsWith('!')) {
+        if (msg == '!hello') {
+            twitchClient.say("Zaptecc", "Hello world!");
+            console.log(user['display-name'] + ' ran command hello');
+        };
+
+        return;
+    };
+
+    discordChannel.send(`[` + user['display-name'] + '] - ' + msg);
+
+    console.log('Twitch Message : [' + user['display-name'] + '] - ' + msg);
+        
+  };
 
 function onConnectedHandler (addr, port) {
     console.log(`* Connected to ${addr}:${port}`);
     twitchClient.action("Zaptecc", "Connected to chat!");
-}
-
-             //DISCORD BELOW
+};
 
 discordClient.on('ready', () => {
     console.log(`Logged in to Discord as ${discordClient.user.tag}!`);
+    discordClient.user.setActivity("twitch.tv/Zaptecc", {
+        type: "WATCHING",
+        url: "https://www.twitch.tv/Zaptecc"
+      });
+});
+
+discordClient.on('message', (message) => {
+
+    if (message.channel.id !== '446713147068514304') {return;}
+
+    const msgAuthor = message.author.username;
+    const msgAuthorID = message.author.id;
+    if (msgAuthorID == '449778211912417281') {return;}
+
+    if (message.startsWith('!')) {
+
+    };
+
+    twitchClient.say("Zaptecc", "Discord Message: [" + msgAuthor + "] - " + message.content);
+
+    console.log('Discord Message: [' + msgAuthor + '] - ' + message.content);
 });
