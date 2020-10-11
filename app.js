@@ -66,7 +66,7 @@ discordClient.on('message', (message) => {
     const msgAuthorID = message.author.id;
     if (msgAuthorID == '449778211912417281') {return;}
 
-    if (message.startsWith('!')) {
+    if (message.content.indexOf('!') == 0) {
 
     };
 
